@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Compatibility helpers.
+"""
+
 # Stdlib:
 import sys
 
@@ -8,10 +12,11 @@ import sys
 import six
 
 
-def _to_native(x, charset=sys.getdefaultencoding(), errors='strict'):
-    if x is None or isinstance(x, str):
-        return x
+def _to_native(val, charset=sys.getdefaultencoding(), errors='strict'):
+    """Convery a unicode (py2.7) or bytes (py3) to a str without hassle."""
+    if val is None or isinstance(val, str):
+        return val
 
     if six.PY3:
-        return x.decode(charset, errors)
-    return x.encode(charset, errors)
+        return val.decode(charset, errors)
+    return val.encode(charset, errors)

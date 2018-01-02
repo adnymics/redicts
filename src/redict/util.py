@@ -17,7 +17,7 @@ import six
 from redict.errors import InternalError
 
 
-def _validate_key(key):
+def validate_key(key):
     """Check if an key is a valid dotted path
 
     :raises: ValueError if invalid.
@@ -40,7 +40,7 @@ def _validate_key(key):
         )
 
 
-def _validate_path_element(elem):
+def validate_path_element(elem):
     """Check if a single path element is valid.
 
     :param elem str: A part of an dotted path (no dots allowed)
@@ -53,7 +53,7 @@ def _validate_path_element(elem):
         raise ValueError("Path elements should contain no dot")
 
 
-def _build_key_hierarchy(key):
+def build_key_hierarchy(key):
     """Build a list with key in it and all of it's parent keys.
 
     :param key str: A dotted path.
@@ -70,7 +70,7 @@ def _build_key_hierarchy(key):
     return all_keys
 
 
-def _build_lock_token(count):
+def build_lock_token(count):
     """Build the lock token to identify what a lock is protecting.
 
     The token consists out of the pid, current thread id and a counter
@@ -86,7 +86,7 @@ def _build_lock_token(count):
     )
 
 
-def _parse_lock_token(token):
+def parse_lock_token(token):
     """Parse a lock token into pid, thread id and lock count.
 
     :param token str: Token (hopefully) built by _build_lock_token.
@@ -99,7 +99,7 @@ def _parse_lock_token(token):
     return [int(elem) for elem in splitted]
 
 
-def _extract_keys(nested, prefix=""):
+def extract_keys(nested, prefix=""):
     """Flatten the (potentially nested) dict `nested`
     by extracting each leaf node. Each leaf is identified by a dotted path.
 
@@ -113,13 +113,13 @@ def _extract_keys(nested, prefix=""):
 
         redis_key = prefix + '.' + key if prefix else key
         if isinstance(value, dict):
-            for sub in _extract_keys(value, prefix=redis_key):
+            for sub in extract_keys(value, prefix=redis_key):
                 yield sub
         else:
             yield redis_key, value
 
 
-def _feed_to_nested(nested, full_key, value):
+def feed_to_nested(nested, full_key, value):
     """Feed a dotted path (key) with a certain value to a dictionary.
     If the path contains dots, the result will be a nested dict.
 
@@ -145,12 +145,12 @@ def _feed_to_nested(nested, full_key, value):
     curr[last] = value
 
 
-def _clear_parents(rconn, key):
+def clear_parents(rconn, key):
     """Clear all parent keys of self.
 
     :param rconn redis.Redis: The connection to redis.
     :param key str: Dotted path of which node's parent to clear.
     """
-    parents = _build_key_hierarchy(key)
+    parents = build_key_hierarchy(key)
     for parent in parents[1:]:
         rconn.delete(parent)

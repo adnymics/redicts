@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Optimistic, distribured lock implementation.
+"""
+
 # Stdlib:
 import os
 import time
@@ -35,7 +39,7 @@ class Lock(object):
     def __init__(self, redis_conn, key, expire_timeout=30, acquire_timeout=10):
         # Note: This object may not have any state (counter, etc.)
         # in order to stay threadsafe. The redis connection is threadsafe.
-        util._validate_key(key)
+        util.validate_key(key)
 
         self._key = key
         self._redis_conn = redis_conn
@@ -68,7 +72,7 @@ class Lock(object):
         If the correct node could have been determined, call callback
         to do some actual work on it.
         """
-        keys = util._build_key_hierarchy(self._key)
+        keys = util.build_key_hierarchy(self._key)
         with self._redis_conn.pipeline() as pipe:
             while True:
                 try:
@@ -98,7 +102,7 @@ class Lock(object):
                 break
 
             # Is it maybe one of our own locks?
-            pid, thread_ident, lock_count = util._parse_lock_token(lock_token)
+            pid, thread_ident, lock_count = util.parse_lock_token(lock_token)
             if pid == own_pid and thread_ident == own_thread_ident:
                 break
 
@@ -116,7 +120,7 @@ class Lock(object):
         # Take over and make sure the key expires at some time.
         # Also increment the lock count.
         pipe.multi()
-        pipe.set(key, util._build_lock_token(lock_count + 1))
+        pipe.set(key, util.build_lock_token(lock_count + 1))
         if self._expire_seconds is not None:
             pipe.expire(key, self._expire_seconds)
 
@@ -137,7 +141,7 @@ class Lock(object):
         # but that might fail on edge cases where the key expired and
         # another pid/thread got the lock (validly). We don't check here
         # since we cannot know for sure.
-        _, _, lock_count = util._parse_lock_token(lock_token)
+        _, _, lock_count = util.parse_lock_token(lock_token)
 
         pipe.multi()
 
@@ -154,7 +158,7 @@ class Lock(object):
             pipe.delete(key)
         else:
             # We held an recursive lock. Leave our mark.
-            pipe.set(key, util._build_lock_token(lock_count - 1))
+            pipe.set(key, util.build_lock_token(lock_count - 1))
             if self._expire_seconds is not None:
                 pipe.expire(key, self._expire_seconds)
 

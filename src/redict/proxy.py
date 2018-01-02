@@ -48,12 +48,12 @@ class _Registry(object):
         path_elems = []
 
         if isinstance(path, six.string_types):
-            util._validate_key(path)
+            util.validate_key(path)
             path_elems = path.split(".")
         else:
             # Assume it is iterable or None.
             for elem in path or []:
-                util._validate_path_element(elem)
+                util.validate_path_element(elem)
                 path_elems.append(elem)
 
         # Convert to tuple, so path elements stay hashable.
@@ -118,13 +118,8 @@ class _ValueProxy(object):
     """
     __slots__ = ["_path", "_redis_lock", "_db_name"]
 
-    def __init__(
-        self,
-        path,
-        lock_acquire_timeout=10,
-        lock_expire_timeout=30,
-        db_name=None,
-    ):
+    def __init__(self, path, lock_acquire_timeout=10,
+                 lock_expire_timeout=30, db_name=None):
         self._path = path
         self._db_name = db_name
 
@@ -205,7 +200,7 @@ class _ValueProxy(object):
 
         :param key str: A dotted path.
         """
-        util._validate_key(key)
+        util.validate_key(key)
         self.get(key).clear()
 
     def iter_children(self):
@@ -229,19 +224,19 @@ class _ValueProxy(object):
         :param value object: Any value that can be passed to json.dumps.
         :param expire int: Time in seconds when to expire this key or None.
         """
-        util._validate_key(key)
+        util.validate_key(key)
         full_key = self._get_full_key(key)
 
         conn = self._conn()
 
         # Delete any previous keys since we're overwriting this key.
         # We don't want to have those old keys lying around above.
-        util._clear_parents(conn, full_key)
+        util.clear_parents(conn, full_key)
 
         if isinstance(value, dict):
             # We overwrite all children, clear any leftover keys.
             self.get(key).clear()
-            items = util._extract_keys(value, full_key)
+            items = util.extract_keys(value, full_key)
         else:
             items = ((full_key, value), )
 
@@ -260,7 +255,7 @@ class _ValueProxy(object):
         :param key str: A dotted path or simple
         :return: A child ValueProxy.
         """
-        util._validate_key(key)
+        util.validate_key(key)
         child_path = self._path + tuple(key.split('.'))
         return _REGISTRY.proxy_from_registry(child_path, db_name=self._db_name)
 
@@ -283,7 +278,7 @@ class _ValueProxy(object):
             # Strip the full key prefix, we're only interested in returning
             # the children values directly.
             sub_key = _to_native(redis_key[len(full_key) + 1:])
-            util._feed_to_nested(nested, sub_key, json.loads(value))
+            util.feed_to_nested(nested, sub_key, json.loads(value))
 
         # This is for the case that this key does not exist, or
         # for the case that the user explicitly set a None value.
@@ -383,8 +378,13 @@ def _connection_pool_from_cfg(cfg, db_name=None):
 
 
 class Singleton(type):
-    def __init__(cls, name, bases, dict):
-        super(Singleton, cls).__init__(name, bases, dict)
+    """Singleton metaclass.
+
+    Shamelessly stolen from SO:
+    https://stackoverflow.com/questions/31875/is-there-a-simple-elegant-way-to-define-singletons
+    """
+    def __init__(cls, name, bases, dct):
+        super(Singleton, cls).__init__(name, bases, dct)
         cls.instance = None
 
     def __call__(cls, *args, **kwargs):
@@ -397,7 +397,7 @@ class Pool(object):
     """Pool of redis connections"""
     __metaclass__ = Singleton
 
-    def __init__(self, cfg={}):
+    def __init__(self, cfg=None):
         """Create a new pool.
 
         :param cfg (dict): The config to use for connection details.
@@ -419,10 +419,10 @@ class Pool(object):
 
         with self._pool_lock:
             self._cfg = cfg
-            self._pools = {}
+            self._pools = cfg or {}
             self._fake_redis = False
 
-    def reload(self, cfg={}, fake_redis=False):
+    def reload(self, cfg=None, fake_redis=False):
         """Reload the pool, disconnecting previous connections
         and creating a new pool.
 
@@ -430,7 +430,7 @@ class Pool(object):
         """
         with self._pool_lock:
             new_pools = {}
-            self._cfg = cfg
+            self._cfg = cfg or {}
             for name, pool in self._pools.iteritems():
                 pool.disconnect()
                 if fake_redis is False:
@@ -462,7 +462,7 @@ class Pool(object):
 # CONVINIENCE METHODS #
 #######################
 
-# pylint: disable=C0103
+# pylint: disable=invalid-name
 def ValueProxy(*args, **kwargs):
     """Create a new ValueProxy.
 
@@ -474,13 +474,13 @@ def ValueProxy(*args, **kwargs):
     return _REGISTRY.proxy_from_registry(*args, **kwargs)
 
 
-# pylint: disable=C0103
+# pylint: disable=invalid-name
 def Root(*args, **kwargs):
     """Return the root ValueProxy"""
     return ValueProxy(path=(), *args, **kwargs)
 
 
-# pylint: disable=C0103
+# pylint: disable=invalid-name
 def Section(name, *args, **kwargs):
     """Convience method for getting a ValueProxy for a first-level section.
     Try to to use a unique name, otherwise you might overwrite foreign keys.
@@ -493,17 +493,3 @@ def Section(name, *args, **kwargs):
     :returns: A ValueProxy for the section.
     """
     return ValueProxy(path=name, *args, **kwargs)
-
-
-if __name__ == "__main__":
-    def main():
-        """Very short benchmarking main.
-        Run with: python -m cProfile -s cumtime
-        """
-        root = Root()
-
-        for _ in range(1000):
-            with root["a"]:
-                root["a"]["b"]["c"] = root["a"]["b"]["c"].val(default=1) + 1
-
-    main()
