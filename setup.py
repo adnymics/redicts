@@ -1,3 +1,4 @@
+from setuptools import find_packages
 from setuptools import setup
 
 setup(
@@ -8,5 +9,8 @@ setup(
     author='adnymics',
     author_email='dev@adnymics.com',
     license='???',
-    packages=['redict'],
+    packages=find_packages('redict'),
+    package_dir={"": "src"},
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
 )
