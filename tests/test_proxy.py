@@ -64,7 +64,7 @@ def background_thread(target, args, jobs=1):
         thr.join()
 
 
-def test_parallel_lock():
+def test_parallel_lock(real_redis):
     """Test if two processes really block on a common ressource"""
     val = ValueProxy('LockMe').set("x", 0)
 
@@ -87,7 +87,7 @@ def test_parallel_lock():
     assert checks["thread-got-through"]
 
 
-def test_parallel_proxy_sets():
+def test_parallel_proxy_sets(real_redis):
     """Test many parallel sets from more than one process."""
 
     ValueProxy(['QC']).set("x", 0)
@@ -123,17 +123,24 @@ def test_parallel_proxy_sets():
     assert ValueProxy(['QC']).get("x").val() == jobs * n_increments
 
 
-def test_alternative_db():
+def test_alternative_db(real_redis):
     """Test if we can set different values for the same key in different
     redis databases. The actual redis db depends on the config.
     """
+    Pool().reload(cfg={
+        "names": {
+            "snmp": 1,
+            "img": 2,
+        },
+    })
+
     default_prox = ValueProxy("cache")
     default_prox.set("x", 0)
 
-    snmp_prox = ValueProxy("cache", db_name=1)
+    snmp_prox = ValueProxy("cache", db_name="snmp")
     snmp_prox.set("x", 1)
 
-    img_prox = ValueProxy("cache", db_name=2)
+    img_prox = ValueProxy("cache", db_name="img")
     img_prox.set("x", 2)
 
     assert default_prox.get("x").val() == 0
@@ -148,7 +155,7 @@ def test_alternative_db():
     assert not_prox.get("x").val() == 3
 
 
-def test_many_open_connections():
+def test_many_open_connections(real_redis):
     """
     Test the connection pooling and see if we do not fail on too many.
     This test acquires 1000 open connections and runs some gets on it,
@@ -185,14 +192,14 @@ def test_many_open_connections():
         _use_me()
 
 
-def test_recursive_lock_expire():
+def test_recursive_lock_expire(real_redis):
     """Regression test for https://adnymics.atlassian.net/browse/DEV-1569:
 
     Sometimes locks somehow survived and had their expire time stripped.
     This was because release() set the value on a recursive lock, which
     stripped the expire time without setting it again.
 
-    We test this in this test suite, because this error does not show
+    We test this as integration, because this error does not show
     when using fakeredis, only when using a real redis connection.
     """
     prox = ValueProxy(

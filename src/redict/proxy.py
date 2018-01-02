@@ -434,7 +434,8 @@ class Pool(object):
             for name, pool in self._pools.iteritems():
                 pool.disconnect()
                 if fake_redis is False:
-                    new_pools[name] = _connection_pool_from_cfg(name)
+                    new_pools[name] = \
+                        _connection_pool_from_cfg(self._cfg, name)
 
             self._pools = new_pools
             self._fake_redis = fake_redis
@@ -449,6 +450,7 @@ class Pool(object):
             if self._fake_redis:
                 return fakeredis.FakeStrictRedis()
 
+            print("db name", db_name)
             if db_name not in self._pools:
                 self._pools[db_name] = \
                     _connection_pool_from_cfg(self._cfg, db_name)

@@ -4,11 +4,11 @@
 import time
 import threading
 
-from redict import Lock
+from redict import Lock, LockTimeout
 
 
-def test_single_thread_acquire(redis_conn):
-    mtx = Lock(redis_conn, 'dum-dum')
+def test_single_thread_acquire(fake_redis):
+    mtx = Lock(fake_redis, 'dum-dum')
     assert not mtx.is_locked()
 
     mtx.acquire()
@@ -23,9 +23,9 @@ def test_single_thread_acquire(redis_conn):
     assert not mtx.is_locked()
 
 
-def test_acquire_timeout(redis_conn):
+def test_acquire_timeout(fake_redis):
     """Test if a threaded double acquire actually blocks"""
-    mtx = Lock(redis_conn, 'dum-dum', acquire_timeout=1)
+    mtx = Lock(fake_redis, 'dum-dum', acquire_timeout=1)
 
     checks = {
         "raised_timeout": False
@@ -37,7 +37,7 @@ def test_acquire_timeout(redis_conn):
             try:
                 with mtx:
                     pass
-            except Lock.LockTimeout:
+            except LockTimeout:
                 checks["raised_timeout"] = True
 
         thr = threading.Thread(target=_wait_for_timeout)
@@ -45,13 +45,13 @@ def test_acquire_timeout(redis_conn):
         thr.join(1.5)
 
     # The lock should be destroyed now.
-    assert redis_conn.get('dum-dum') is None
+    assert fake_redis.get('dum-dum') is None
     assert checks["raised_timeout"]
 
 
-def test_acquire_expire(redis_conn):
+def test_acquire_expire(fake_redis):
     """Test if the expire feature works"""
-    mtx = Lock(redis_conn, 'dum-dum', expire_timeout=1)
+    mtx = Lock(fake_redis, 'dum-dum', expire_timeout=1)
     mtx.acquire()
 
     # This is only a dict to make it
@@ -76,6 +76,6 @@ def test_acquire_expire(redis_conn):
     mtx.release()
     thr.join(0.1)
 
-    assert redis_conn.get('dum-dum') is None
+    assert fake_redis.get('dum-dum') is None
     assert checks["thread_acquired"]
     assert checks["thread_released"]
