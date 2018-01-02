@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Stdlib:
 import time
 import threading
 
+# External:
+import pytest
+
+# Internal:
 from redict import Lock, LockTimeout
 
 
+@pytest.mark.unittest
 def test_single_thread_acquire(fake_redis):
     mtx = Lock(fake_redis, 'dum-dum')
     assert not mtx.is_locked()
@@ -23,6 +29,7 @@ def test_single_thread_acquire(fake_redis):
     assert not mtx.is_locked()
 
 
+@pytest.mark.unittest
 def test_acquire_timeout(fake_redis):
     """Test if a threaded double acquire actually blocks"""
     mtx = Lock(fake_redis, 'dum-dum', acquire_timeout=1)
@@ -49,6 +56,7 @@ def test_acquire_timeout(fake_redis):
     assert checks["raised_timeout"]
 
 
+@pytest.mark.unittest
 def test_acquire_expire(fake_redis):
     """Test if the expire feature works"""
     mtx = Lock(fake_redis, 'dum-dum', expire_timeout=1)

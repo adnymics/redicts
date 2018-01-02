@@ -1,3 +1,4 @@
+# Stdlib:
 import time
 import contextlib
 
@@ -5,8 +6,13 @@ from threading import Thread, Semaphore
 from collections import defaultdict
 from multiprocessing import Process
 
+# External:
+import pytest
+
+# Internal:
 from redict import ValueProxy, Pool
 from redict.proxy import _clear_all_locks
+
 
 class Barrier(object):
     """
@@ -64,6 +70,7 @@ def background_thread(target, args, jobs=1):
         thr.join()
 
 
+@pytest.mark.integration
 def test_parallel_lock(real_redis):
     """Test if two processes really block on a common ressource"""
     val = ValueProxy('LockMe').set("x", 0)
@@ -87,6 +94,7 @@ def test_parallel_lock(real_redis):
     assert checks["thread-got-through"]
 
 
+@pytest.mark.integration
 def test_parallel_proxy_sets(real_redis):
     """Test many parallel sets from more than one process."""
 
@@ -123,6 +131,7 @@ def test_parallel_proxy_sets(real_redis):
     assert ValueProxy(['QC']).get("x").val() == jobs * n_increments
 
 
+@pytest.mark.integration
 def test_alternative_db(real_redis):
     """Test if we can set different values for the same key in different
     redis databases. The actual redis db depends on the config.
@@ -155,6 +164,7 @@ def test_alternative_db(real_redis):
     assert not_prox.get("x").val() == 3
 
 
+@pytest.mark.integration
 def test_many_open_connections(real_redis):
     """
     Test the connection pooling and see if we do not fail on too many.

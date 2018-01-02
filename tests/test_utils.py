@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# External:
+import pytest
 
+# Internal:
 from redict.util import _extract_keys, _feed_to_nested
+
 
 SAMPLE_DATA = {
     "a": {
@@ -25,6 +29,7 @@ FLATTENED_DATA = {
 }
 
 
+@pytest.mark.unittest
 def test_extract_keys():
     """See if extracting all keys from a dict works"""
     assert set(_extract_keys({})) == set([])
@@ -32,6 +37,7 @@ def test_extract_keys():
     assert key_values == FLATTENED_DATA
 
 
+@pytest.mark.unittest
 def test_feed_to_nested():
     """See if converting the keys back to dicts seems to work"""
     nested = {}

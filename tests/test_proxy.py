@@ -21,6 +21,7 @@ from redict import ValueProxy, Root, Section, Pool
 # pylint: disable=no-self-use,attribute-defined-outside-init
 
 
+@pytest.mark.unittest
 def test_basic_set(fake_redis):
     """See if the very basic testcases work"""
     root = ValueProxy(path=('TestQualityControl',))
@@ -41,6 +42,7 @@ def test_basic_set(fake_redis):
     assert root.get('a').val() == {'b': 42, 'e': 3}
 
 
+@pytest.mark.unittest
 def test_locking_edge_cases(fake_redis):
     """See if locking edge cases like recursive locks work"""
     root = ValueProxy(path=('QualityControl',))
@@ -65,6 +67,7 @@ def test_locking_edge_cases(fake_redis):
     assert not root.is_locked()
 
 
+@pytest.mark.unittest
 def test_recursive_local_lock(fake_redis):
     """Test if a local value can be modified by the same thread,
     but blocks when being accessed from more than one.
@@ -104,6 +107,7 @@ def test_root_proxy(fake_redis):
         assert root["x"].val() == 2
 
 
+@pytest.mark.unittest
 def test_section_proxy(fake_redis):
     """See if the section helper works"""
     section = Section("QualityConytrol")
@@ -114,6 +118,7 @@ def test_section_proxy(fake_redis):
         assert section["x"].val() == 2
 
 
+@pytest.mark.unittest
 def test_basic_locking(fake_redis):
     """Check if single process locking works"""
     root = ValueProxy(path=('QualityControl',))
@@ -125,6 +130,7 @@ def test_basic_locking(fake_redis):
     root.release()
 
 
+@pytest.mark.unittest
 def test_nested_locking(fake_redis):
     """Check if locking is possible """
     section = Section("nested")
@@ -173,8 +179,10 @@ def test_nested_locking(fake_redis):
     assert checks['thread-died'] is True
 
 
+@pytest.mark.unittest
 def test_sequential_lock(fake_redis):
-    """Simply test if incrementing a value locking in a single thread
+    """
+    Simply test if incrementing a value locking in a single thread
     works (other tests always test concurrent access)
     """
     locked_val = ValueProxy('LockMe').set("x", 0)
@@ -183,12 +191,14 @@ def test_sequential_lock(fake_redis):
             locked_val.set("x", locked_val.get("x").val() + 1)
 
 
+@pytest.mark.unittest
 def test_same_reference(fake_redis):
     """Test if the same reference is returned for the same proxy path."""
     assert ValueProxy("x") is ValueProxy("x")
     assert ValueProxy("x") is not ValueProxy("y")
 
 
+@pytest.mark.unittest
 def test_if_equal(fake_redis):
     """See if __eq__ works as expected"""
     ValueProxy("section").set("x", 1)
@@ -199,6 +209,7 @@ def test_if_equal(fake_redis):
     assert ValueProxy("section.x") != ValueProxy("section.y")
 
 
+@pytest.mark.unittest
 def test_delete(fake_redis):
     """Check if the delete key method works"""
     root = Root()
@@ -209,6 +220,7 @@ def test_delete(fake_redis):
     assert root.get("x").val() is None
 
 
+@pytest.mark.unittest
 def test_value_exists(fake_redis):
     """Test if the exists method works."""
     sec = Section("dummy")
@@ -218,6 +230,7 @@ def test_value_exists(fake_redis):
     assert sec["x"].exists()
 
 
+@pytest.mark.unittest
 def test_iter_children(fake_redis):
     """See if getting all children (only leaf nodes!) work"""
     sec = Section("dummy")
@@ -233,6 +246,7 @@ def test_iter_children(fake_redis):
     assert fake_redis.get('v:.dummy.a.b.d') == '3'
 
 
+@pytest.mark.unittest
 def test_add(fake_redis):
     """See if adding on a key works"""
     sec = Section("dummy")
@@ -245,6 +259,7 @@ def test_add(fake_redis):
     assert sec.get("x").val() == 2
 
 
+@pytest.mark.unittest
 def test_val_default(fake_redis):
     """Test if the default param of val() works"""
     sec = Section("dummy")
@@ -259,6 +274,7 @@ def test_val_default(fake_redis):
     assert sec["x"].val(default=None) is 10
 
 
+@pytest.mark.unittest
 def test_timeout(fake_redis):
     """See if the timeout is set correctly (regression test)"""
     sec = Section("t", lock_acquire_timeout=0, lock_expire_timeout=-1)
