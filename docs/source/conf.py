@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# redict documentation build configuration file, created by
+# redicts documentation build configuration file, created by
 # sphinx-quickstart on Tue Jan  2 10:28:21 2018.
 #
 # This file is execfile()d with the current directory set to its
@@ -55,7 +55,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'redict'
+project = u'redicts'
 copyright = u'2018, adnymics'
 author = u'adnymics'
 
@@ -209,7 +209,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'redictdoc'
+htmlhelp_basename = 'redictsdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -231,7 +231,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'redict.tex', u'redict Documentation',
+  (master_doc, 'redicts.tex', u'redicts Documentation',
    u'adnymics', 'manual'),
 ]
 
@@ -261,7 +261,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'redict', u'redict Documentation',
+    (master_doc, 'redicts', u'redicts Documentation',
      [author], 1)
 ]
 
@@ -275,8 +275,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'redict', u'redict Documentation',
-   author, 'redict', 'One line description of project.',
+  (master_doc, 'redicts', u'redicts Documentation',
+   author, 'redicts', 'One line description of project.',
    'Miscellaneous'),
 ]
 

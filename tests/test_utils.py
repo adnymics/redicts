@@ -9,7 +9,7 @@ Test the key related utils.
 import pytest
 
 # Internal:
-from redict.util import extract_keys, feed_to_nested
+from redicts.util import extract_keys, feed_to_nested
 
 
 SAMPLE_DATA = {

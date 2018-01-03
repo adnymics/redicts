@@ -49,9 +49,9 @@ __version__ = '1.0.0'
 
 
 # pylint: disable=unused-import
-from redict.proxy import Section, Root, Pool, ValueProxy
-from redict.lock import Lock
-from redict.errors import LockTimeout, InternalError
+from redicts.proxy import Section, Root, Pool, ValueProxy
+from redicts.lock import Lock
+from redicts.errors import LockTimeout, InternalError
 
 
 if __name__ == "__main__":

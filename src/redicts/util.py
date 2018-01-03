@@ -14,7 +14,7 @@ import threading
 import six
 
 # Internal:
-from redict.errors import InternalError
+from redicts.errors import InternalError
 
 
 def validate_key(key):

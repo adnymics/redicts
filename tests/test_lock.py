@@ -13,7 +13,7 @@ import threading
 import pytest
 
 # Internal:
-from redict import Lock, LockTimeout
+from redicts import Lock, LockTimeout
 
 
 @pytest.mark.unittest

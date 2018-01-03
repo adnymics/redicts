@@ -7,7 +7,7 @@ Fixtures to setup tests.
 
 import pytest
 
-from redict import Pool
+from redicts import Pool
 
 
 @pytest.fixture

@@ -14,7 +14,7 @@ import threading
 import pytest
 
 # Internal:
-from redict import ValueProxy, Root, Section
+from redicts import ValueProxy, Root, Section
 
 
 # pylint: disable=no-self-use,attribute-defined-outside-init,unused-argument

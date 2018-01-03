@@ -21,7 +21,7 @@ from multiprocessing import Process
 import pytest
 
 # Internal:
-from redict import ValueProxy, Pool
+from redicts import ValueProxy, Pool
 
 
 class Barrier(object):

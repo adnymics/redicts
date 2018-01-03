@@ -18,10 +18,10 @@ import fakeredis
 import six
 
 # Internal:
-import redict.util as util
+import redicts.util as util
 
-from redict._compat import _to_native
-from redict.lock import Lock
+from redicts._compat import _to_native
+from redicts.lock import Lock
 
 
 # pylint: disable=too-few-public-methods

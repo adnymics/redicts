@@ -14,10 +14,10 @@ import threading
 import redis
 
 # Internal:
-import redict.util as util
+import redicts.util as util
 
-from redict._compat import _to_native
-from redict.errors import LockTimeout, InternalError
+from redicts._compat import _to_native
+from redicts.errors import LockTimeout, InternalError
 
 
 class Lock(object):
