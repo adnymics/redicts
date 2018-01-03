@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Test the key related utils.
+"""
+
 # External:
 import pytest
 

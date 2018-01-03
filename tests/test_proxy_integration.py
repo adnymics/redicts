@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Tests that use a real redis connection.
+Only execute those if you have a running redis instance.
+"""
+
+# pylint: disable=unused-argument,too-few-public-methods
+
+
 # Stdlib:
 import time
 import contextlib
@@ -11,7 +22,6 @@ import pytest
 
 # Internal:
 from redict import ValueProxy, Pool
-from redict.proxy import _clear_all_locks
 
 
 class Barrier(object):
@@ -202,6 +212,7 @@ def test_many_open_connections(real_redis):
         _use_me()
 
 
+# pylint: disable=protected-access
 def test_recursive_lock_expire(real_redis):
     """Regression test for https://adnymics.atlassian.net/browse/DEV-1569:
 
@@ -235,4 +246,3 @@ def test_recursive_lock_expire(real_redis):
 
     # The lock was cleared -> no key anymore -> negative ttl
     assert conn.ttl("l:.lock-test") < 0
-

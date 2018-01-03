@@ -12,13 +12,12 @@ import threading
 
 # External:
 import pytest
-import fakeredis
 
 # Internal:
-from redict import ValueProxy, Root, Section, Pool
+from redict import ValueProxy, Root, Section
 
 
-# pylint: disable=no-self-use,attribute-defined-outside-init
+# pylint: disable=no-self-use,attribute-defined-outside-init,unused-argument
 
 
 @pytest.mark.unittest

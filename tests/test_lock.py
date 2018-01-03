@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Test the optimistic locking implementation.
+"""
+
 # Stdlib:
 import time
 import threading
@@ -14,6 +18,7 @@ from redict import Lock, LockTimeout
 
 @pytest.mark.unittest
 def test_single_thread_acquire(fake_redis):
+    """Test the simple happy case"""
     mtx = Lock(fake_redis, 'dum-dum')
     assert not mtx.is_locked()
 
