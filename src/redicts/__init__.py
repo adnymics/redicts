@@ -29,27 +29,26 @@ Basic usage example:
 
 .. code-block:: python
 
-    >>> sec = Section("QualityControl")
-    >>> with sec:
+    >>> with section("QualityControl") as sec:
     ...     sec["value"] = 23
     ...     sec["subsection"] = {"a": 42}
     ...     sec["value"].val()  # => 23
     ...     sec["subsection.a"].val()  # => 42
     ...     sec["subsection"]["a"].val()  # => 42
+    ...
     >>> # Accessing the subsection directly works fine too.
-    >>> sub = Section("QualityControl.subsection")
-    >>> with sub:
+    >>> with Section("QualityControl.subsection") as sub:
     ...     sub["a"].val()  # => 23
 
 
-@author: cpahl
+..codeauthor:: c.pahl@adnymics.com
 """
 
 __version__ = '1.0.0'
 
 
 # pylint: disable=unused-import
-from redicts.proxy import Section, Root, Pool, ValueProxy
+from redicts.proxy import section, root, Pool, Proxy
 from redicts.lock import Lock
 from redicts.errors import LockTimeout, InternalError
 
@@ -59,10 +58,10 @@ if __name__ == "__main__":
         """Very short benchmarking main.
         Run with: python -m cProfile -s cumtime
         """
-        root = Root()
-
+        root_proxy = root()
         for _ in range(1000):
-            with root["a"]:
-                root["a"]["b"]["c"] = root["a"]["b"]["c"].val(default=1) + 1
+            with root_proxy["a"]:
+                root_proxy["a"]["b"]["c"] = \
+                    root_proxy["a"]["b"]["c"].val(default=1) + 1
 
     main()

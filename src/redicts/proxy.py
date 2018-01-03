@@ -26,7 +26,7 @@ from redicts.lock import Lock
 
 # pylint: disable=too-few-public-methods
 class _Registry(object):
-    """The registry is used to store existing ValueProxy objects. This is used
+    """The registry is used to store existing Proxy objects. This is used
     to prevent unneeded re-creating of ValueProxies for the same key.
     """
     def __init__(self):
@@ -43,7 +43,7 @@ class _Registry(object):
         :param path tuple: The tuple representation of a dotted path.
         :param db_name str: What redis db to use.
         :param rconn redis.Redis: The redis connection to use.
-        :returns ValueProxy: A new or existing
+        :returns Proxy: A new or existing
         """
         path_elems = []
 
@@ -64,7 +64,7 @@ class _Registry(object):
             # Prefer the one passed directly.
             return self._proxies[db_name].setdefault(
                 path_elems_tuple,
-                _ValueProxy(path_elems_tuple, *args, **kwargs)
+                _Proxy(path_elems_tuple, *args, **kwargs)
             )
 
 
@@ -75,7 +75,7 @@ _REGISTRY = _Registry()
 
 
 def _op_proxy(oper):
-    """Redirect a python operator to the .val() method of ValueProxy
+    """Redirect a python operator to the .val() method of Proxy
 
     :param oper operator: A function that takes
                           two arguments and yields one result.
@@ -111,7 +111,7 @@ def _clear_all_locks(rconn):
         rconn.delete(redis_key)
 
 
-class _ValueProxy(object):
+class _Proxy(object):
     """Proxy object for a single value or a tree of values.
     See the module description for a more detailed description
     and some additional usage examples.
@@ -120,6 +120,14 @@ class _ValueProxy(object):
 
     def __init__(self, path, lock_acquire_timeout=10,
                  lock_expire_timeout=30, db_name=None):
+        """You are not supposed to instance this class yourself.
+        Use the provided Proxy(), Section() and Root()
+
+        :param path str_or_iterable: Path to the value.
+        :param lock_acquire_timeout int (seconds): Passed to Lock().
+        :param lock_expire_timeout int (seconds): Passed to Lock().
+        :param db_name str: Optional db_name to use (uses default otherwise)
+        """
         self._path = path
         self._db_name = db_name
 
@@ -211,7 +219,7 @@ class _ValueProxy(object):
         own_path = self._get_full_key(None)
         for redis_key in self._conn().scan_iter(own_path + '.*'):
             # Split the VAL_TREE_PREFIX away, it will be added again when
-            # creating a new _ValueProxy.
+            # creating a new _Proxy.
             trimmed_key = _to_native(redis_key[len(LOCK_TREE_PREFIX) + 1:])
             yield _REGISTRY.proxy_from_registry(
                 trimmed_key, db_name=self._db_name
@@ -253,7 +261,7 @@ class _ValueProxy(object):
         """Return a lazy value for this key.
 
         :param key str: A dotted path or simple
-        :return: A child ValueProxy.
+        :return: A child Proxy.
         """
         util.validate_key(key)
         child_path = self._path + tuple(key.split('.'))
@@ -377,25 +385,9 @@ def _connection_pool_from_cfg(cfg, db_name=None):
     )
 
 
-class Singleton(type):
-    """Singleton metaclass.
-
-    Shamelessly stolen from SO:
-    https://stackoverflow.com/questions/31875/is-there-a-simple-elegant-way-to-define-singletons
-    """
-    def __init__(cls, name, bases, dct):
-        super(Singleton, cls).__init__(name, bases, dct)
-        cls.instance = None
-
-    def __call__(cls, *args, **kwargs):
-        if cls.instance is None:
-            cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls.instance
-
-
 class Pool(object):
     """Pool of redis connections"""
-    __metaclass__ = Singleton
+    __metaclass__ = util.Singleton
 
     def __init__(self, cfg=None):
         """Create a new pool.
@@ -418,8 +410,8 @@ class Pool(object):
         self._pool_lock = threading.RLock()
 
         with self._pool_lock:
-            self._cfg = cfg
-            self._pools = cfg or {}
+            self._cfg = cfg or {}
+            self._pools = {}
             self._fake_redis = False
 
     def reload(self, cfg=None, fake_redis=False):
@@ -450,7 +442,6 @@ class Pool(object):
             if self._fake_redis:
                 return fakeredis.FakeStrictRedis()
 
-            print("db name", db_name)
             if db_name not in self._pools:
                 self._pools[db_name] = \
                     _connection_pool_from_cfg(self._cfg, db_name)
@@ -462,27 +453,36 @@ class Pool(object):
 # CONVINIENCE METHODS #
 #######################
 
-# pylint: disable=invalid-name
-def ValueProxy(*args, **kwargs):
-    """Create a new ValueProxy.
+
+class _ProxyMeta(type):
+    """Hack to make Proxy() return a cached instance, although it looks
+    and feels like a class instance"""
+    def __init__(cls, name, bases, dct):
+        super(_ProxyMeta, cls).__init__(name, bases, dct)
+
+    def __call__(cls, *args, **kwargs):
+        return _REGISTRY.proxy_from_registry(*args, **kwargs)
+
+
+class Proxy(_Proxy):
+    """Create a new Proxy.
 
     :param path str_or_iterable: The path where this value is stored.
             Can be a string (a dotted path) or an iterable of strings.
     :param rconn redis.Redis: Optional; the redis connection to use.
-    :returns ValueProxy: The ready to use ValueProxy.
+    :returns Proxy: The ready to use Proxy.
     """
-    return _REGISTRY.proxy_from_registry(*args, **kwargs)
+
+    __metaclass__ = _ProxyMeta
 
 
-# pylint: disable=invalid-name
-def Root(*args, **kwargs):
-    """Return the root ValueProxy"""
-    return ValueProxy(path=(), *args, **kwargs)
+def root(*args, **kwargs):
+    """Return the root Proxy"""
+    return Proxy(path=(), *args, **kwargs)
 
 
-# pylint: disable=invalid-name
-def Section(name, *args, **kwargs):
-    """Convience method for getting a ValueProxy for a first-level section.
+def section(name, *args, **kwargs):
+    """Convience method for getting a Proxy for a first-level section.
     Try to to use a unique name, otherwise you might overwrite foreign keys.
     A good idiom is to use something like this to get a descriptive, but
     unique name for your module:
@@ -490,6 +490,6 @@ def Section(name, *args, **kwargs):
         Section(__name__)
 
     :param name str: The section name. May not contain dots.
-    :returns: A ValueProxy for the section.
+    :returns: A Proxy for the section.
     """
-    return ValueProxy(path=name, *args, **kwargs)
+    return Proxy(path=name, *args, **kwargs)

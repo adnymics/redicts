@@ -21,7 +21,7 @@ from multiprocessing import Process
 import pytest
 
 # Internal:
-from redicts import ValueProxy, Pool
+from redicts import Proxy, Pool
 
 
 class Barrier(object):
@@ -83,7 +83,7 @@ def background_thread(target, args, jobs=1):
 @pytest.mark.integration
 def test_parallel_lock(real_redis):
     """Test if two processes really block on a common ressource"""
-    val = ValueProxy('LockMe').set("x", 0)
+    val = Proxy('LockMe').set("x", 0)
 
     checks = defaultdict(bool)
 
@@ -108,7 +108,7 @@ def test_parallel_lock(real_redis):
 def test_parallel_proxy_sets(real_redis):
     """Test many parallel sets from more than one process."""
 
-    ValueProxy(['QC']).set("x", 0)
+    Proxy(['QC']).set("x", 0)
     n_increments = 1000
     jobs = 4
 
@@ -119,7 +119,7 @@ def test_parallel_proxy_sets(real_redis):
         """
         # Note: Every process needs it's own lock.
         # Obvious, but easy to forget in unittests.
-        proxy = ValueProxy(['QC'])
+        proxy = Proxy(['QC'])
         for _ in range(n_increments):
             with proxy:
                 proxy.set("x", proxy.get("x").val() + 1)
@@ -129,16 +129,16 @@ def test_parallel_proxy_sets(real_redis):
         _many_increments()
 
     # See if really all increments got counted.
-    assert ValueProxy(['QC']).get("x").val() == jobs * n_increments
+    assert Proxy(['QC']).get("x").val() == jobs * n_increments
 
     # Reset and see if it also works for mutliple processes
-    ValueProxy(['QC']).set("x", 0)
+    Proxy(['QC']).set("x", 0)
     with background_proc(_many_increments, (), jobs=jobs - 1):
         # This code runs in the foreground:
         _many_increments()
 
     # See if really all increments got counted.
-    assert ValueProxy(['QC']).get("x").val() == jobs * n_increments
+    assert Proxy(['QC']).get("x").val() == jobs * n_increments
 
 
 @pytest.mark.integration
@@ -153,20 +153,20 @@ def test_alternative_db(real_redis):
         },
     })
 
-    default_prox = ValueProxy("cache")
+    default_prox = Proxy("cache")
     default_prox.set("x", 0)
 
-    snmp_prox = ValueProxy("cache", db_name="snmp")
+    snmp_prox = Proxy("cache", db_name="snmp")
     snmp_prox.set("x", 1)
 
-    img_prox = ValueProxy("cache", db_name="img")
+    img_prox = Proxy("cache", db_name="img")
     img_prox.set("x", 2)
 
     assert default_prox.get("x").val() == 0
     assert snmp_prox.get("x").val() == 1
     assert img_prox.get("x").val() == 2
 
-    not_prox = ValueProxy("cache", db_name="not_there")
+    not_prox = Proxy("cache", db_name="not_there")
     not_prox.set("x", 3)
 
     # Not existing db_names will land it db 0, same as default:
@@ -183,7 +183,7 @@ def test_many_open_connections(real_redis):
 
     NOTE: This test assumes a high enough (> 1000) maxclients in redis.conf
     """
-    prox = ValueProxy(
+    prox = Proxy(
         ['ImageCache'],
         lock_acquire_timeout=100,
         lock_expire_timeout=105,
@@ -223,7 +223,7 @@ def test_recursive_lock_expire(real_redis):
     We test this as integration, because this error does not show
     when using fakeredis, only when using a real redis connection.
     """
-    prox = ValueProxy(
+    prox = Proxy(
         ['lock-test'],
         lock_acquire_timeout=10,
         lock_expire_timeout=15,
