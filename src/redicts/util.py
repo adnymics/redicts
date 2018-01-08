@@ -107,7 +107,7 @@ def extract_keys(nested, prefix=""):
     :param prefix str: The prefix which every yielded dotted key should have.
     :returns iter: An iterator that yields tuples of (dotted_key, value)
     """
-    for key, value in nested.iteritems():
+    for key, value in nested.items():
         if not isinstance(key, six.string_types):
             raise ValueError("Keys must always be strings")
 

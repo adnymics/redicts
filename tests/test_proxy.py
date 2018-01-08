@@ -237,8 +237,8 @@ def test_iter_children(fake_redis):
     children = [(prx.key(), prx.val()) for prx in sec.iter_children()]
 
     assert children == [('dummy.a.b.c', 2), ('dummy.a.b.d', 3)]
-    assert fake_redis.get('v:.dummy.a.b.c') == '2'
-    assert fake_redis.get('v:.dummy.a.b.d') == '3'
+    assert fake_redis.get('v:.dummy.a.b.c') == b'2'
+    assert fake_redis.get('v:.dummy.a.b.d') == b'3'
 
 
 @pytest.mark.unittest

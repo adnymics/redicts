@@ -128,7 +128,10 @@ class _Proxy(object):
         :param lock_expire_timeout int (seconds): Passed to Lock().
         :param db_name str: Optional db_name to use (uses default otherwise)
         """
-        self._path = path
+        if isinstance(path, six.string_types):
+            path = (path, )
+
+        self._path = tuple(path)
         self._db_name = db_name
 
         self._redis_lock = Lock(
@@ -385,10 +388,9 @@ def _connection_pool_from_cfg(cfg, db_name=None):
     )
 
 
+@six.add_metaclass(util.Singleton)
 class Pool(object):
     """Pool of redis connections"""
-    __metaclass__ = util.Singleton
-
     def __init__(self, cfg=None):
         """Create a new pool.
 
@@ -423,7 +425,7 @@ class Pool(object):
         with self._pool_lock:
             new_pools = {}
             self._cfg = cfg or {}
-            for name, pool in self._pools.iteritems():
+            for name, pool in self._pools.items():
                 pool.disconnect()
                 if fake_redis is False:
                     new_pools[name] = \
@@ -464,7 +466,7 @@ class _ProxyMeta(type):
         return _REGISTRY.proxy_from_registry(*args, **kwargs)
 
 
-class Proxy(_Proxy):
+class Proxy(six.with_metaclass(_ProxyMeta, _Proxy)):
     """Create a new Proxy.
 
     :param path str_or_iterable: The path where this value is stored.
@@ -472,8 +474,7 @@ class Proxy(_Proxy):
     :param rconn redis.Redis: Optional; the redis connection to use.
     :returns Proxy: The ready to use Proxy.
     """
-
-    __metaclass__ = _ProxyMeta
+    pass
 
 
 def root(*args, **kwargs):
