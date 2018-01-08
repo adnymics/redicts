@@ -3,6 +3,19 @@
 
 A utilty package to save arbitary nested python dicts and objects in redis.
 
+|rtd| |nbsp| |coverage| |nbsp| |travis|
+
+.. |rtd| image:: https://readthedocs.org/projects/redicts/badge/?version=latest
+
+.. TODO: Setup.
+.. |coverage| unicode:: 0xA0
+
+.. TODO: Setup.
+.. |travis| unicode:: 0xA0
+
+.. |nbsp| unicode:: 0xA0
+   :trim:
+
 Usage
 =====
 
@@ -35,7 +48,7 @@ Documentation
 
 Documentation can be found on readthedocs:
 
-    TODO
+    http://redicts.readthedocs.io/en/latest
 
 Example
 =======
