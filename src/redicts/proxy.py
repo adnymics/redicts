@@ -38,11 +38,11 @@ class _Registry(object):
         """Check if an existing proxy already exists in the registry,
         if not create a new one with the supplied path.
 
-        This function is threadsafe.
+        This function is thread-safe.
 
-        :param path tuple: The tuple representation of a dotted path.
-        :param db_name str: What redis db to use.
-        :param rconn redis.Redis: The redis connection to use.
+        :param path: (tuple) The tuple representation of a dotted path.
+        :param db_name: (str) What redis db to use.
+        :param rconn: (redis.Redis) The redis connection to use.
         :returns Proxy: A new or existing
         """
         path_elems = []
@@ -77,8 +77,8 @@ _REGISTRY = _Registry()
 def _op_proxy(oper):
     """Redirect a python operator to the .val() method of Proxy
 
-    :param oper operator: A function that takes
-                          two arguments and yields one result.
+    :param oper: (operator) A function that takes
+                 two arguments and yields one result.
     :return: The wrapped operator.
     """
     def _operator(self, *args):
@@ -91,8 +91,8 @@ def _get_sub_keys(conn, full_key):
     """Helper to yield all sub keys including the own key.
     Useful to
 
-    :param pool ConnectionPool: Where to get the connection from.
-    :param full_key str:
+    :param conn: (ConnectionPool) Where to get the connection from.
+    :param full_key: (str)
     """
     for redis_key in conn.scan_iter(full_key + ".*"):
         yield _to_native(redis_key)
@@ -104,7 +104,7 @@ def _clear_all_locks(rconn):
     """Clear the whole locking tree.
     This function should only be used for unittests.
 
-    :param rconn redis.Redis: The connection to redis.
+    :param rconn: (redis.Redis) The connection to redis.
     """
     rconn.delete(LOCK_TREE_PREFIX)
     for redis_key in rconn.scan_iter(LOCK_TREE_PREFIX + ".*"):
@@ -123,10 +123,10 @@ class _Proxy(object):
         """You are not supposed to instance this class yourself.
         Use the provided Proxy(), Section() and Root()
 
-        :param path str_or_iterable: Path to the value.
-        :param lock_acquire_timeout int (seconds): Passed to Lock().
-        :param lock_expire_timeout int (seconds): Passed to Lock().
-        :param db_name str: Optional db_name to use (uses default otherwise)
+        :param path: (str | iterable) Path to the value.
+        :param lock_acquire_timeout: int (seconds)Passed to Lock().
+        :param lock_expire_timeout: int (seconds)Passed to Lock().
+        :param db_name: (str) Optional db_name to use (uses default otherwise)
         """
         if isinstance(path, six.string_types):
             path = (path, )
@@ -181,7 +181,7 @@ class _Proxy(object):
 
         :param key str: The child key to append. If None, the own path
                         will be built.
-        :returns str: The fully qualifed path of this node.
+        :returns str: The fully qualified path of this node.
         """
         if self._path:
             own_key = '.'.join((VAL_TREE_PREFIX, ) + self._path)
@@ -209,7 +209,7 @@ class _Proxy(object):
     def delete(self, key):
         """Delete an existing key.
 
-        :param key str: A dotted path.
+        :param key: (str) A dotted path.
         """
         util.validate_key(key)
         self.get(key).clear()
@@ -231,9 +231,9 @@ class _Proxy(object):
     def set(self, key, value, expire=None):
         """Set a new value to this key.
 
-        :param key str: A dotted path.
-        :param value object: Any value that can be passed to json.dumps.
-        :param expire int: Time in seconds when to expire this key or None.
+        :param key: (str) A dotted path.
+        :param value: (object) Any value that can be passed to json.dumps.
+        :param expire: (int) Time in seconds when to expire this key or None.
         """
         util.validate_key(key)
         full_key = self._get_full_key(key)
@@ -263,7 +263,7 @@ class _Proxy(object):
     def get(self, key):
         """Return a lazy value for this key.
 
-        :param key str: A dotted path or simple
+        :param key: (str) A dotted path or simple
         :return: A child Proxy.
         """
         util.validate_key(key)
@@ -308,7 +308,7 @@ class _Proxy(object):
         Will raise an ValueError if the key exists and does not support
         the add operator.
 
-        :param count int: The count to increment.
+        :param count: (int) The count to increment.
         :return: The new total count.
         """
         full_key = self._get_full_key()
@@ -321,7 +321,8 @@ class _Proxy(object):
         After this time .val() will return None and .exists() will return
         False.
 
-        :param int: seconds after this value will no longer accessible.
+        :param seconds: (int) seconds after this value will no longer
+                        accessible.
         """
         for redis_key in _get_sub_keys(self._conn(), self._get_full_key(None)):
             self._conn().expire(redis_key, seconds)

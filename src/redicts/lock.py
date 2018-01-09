@@ -21,11 +21,11 @@ from redicts.errors import LockTimeout, InternalError
 
 
 class Lock(object):
-    """Implement a distributed, threadsafe lock for redis.
+    """Implement a distributed, thread-safe lock for redis.
 
     The basics are described here: https://redis.io/topics/transactions
     This lock is more flexible than other locking implementations, since
-    it supports tree-based locking by specifiying a dotted path as key.
+    it supports tree-based locking by specifying a dotted path as key.
 
     If you lock an element higher up in the hierarchy, all elements below it
     will be automatically locked too. It is still possible to lock elements
@@ -38,7 +38,7 @@ class Lock(object):
 
     def __init__(self, redis_conn, key, expire_timeout=30, acquire_timeout=10):
         # Note: This object may not have any state (counter, etc.)
-        # in order to stay threadsafe. The redis connection is threadsafe.
+        # in order to stay thread-safe. The redis connection is thread-safe.
         util.validate_key(key)
 
         self._key = key
@@ -85,8 +85,8 @@ class Lock(object):
     def _acquire(self, pipe, key):
         """Actual implementation of acquire(), called by _find_root_lock
 
-        :param pipe redis.StrictPipe: A redis pipe.
-        :param key str: The full key to lock.
+        :param pipe: (redis.StrictPipe) A redis pipe.
+        :param key: (str) The full key to lock.
         """
         retries = self._acquire_seconds * 20
         lock_count = 0
@@ -127,8 +127,8 @@ class Lock(object):
     def _release(self, pipe, key):
         """Actual implementation of release(), called by _find_root_lock
 
-        :param pipe redis.Pipe: A redis pipe.
-        :param key str: The full key to release.
+        :param pipe: (redis.Pipe) A redis pipe.
+        :param key: (str) The full key to release.
         """
         lock_token = _to_native(pipe.get(key))
         if lock_token is None:

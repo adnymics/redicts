@@ -43,7 +43,7 @@ def validate_key(key):
 def validate_path_element(elem):
     """Check if a single path element is valid.
 
-    :param elem str: A part of an dotted path (no dots allowed)
+    :param elem: (str) A part of an dotted path (no dots allowed)
     :raises: ValueError if invalid.
     """
     if len(elem) is 0:
@@ -56,7 +56,7 @@ def validate_path_element(elem):
 def build_key_hierarchy(key):
     """Build a list with key in it and all of it's parent keys.
 
-    :param key str: A dotted path.
+    :param key: (str) A dotted path.
     :returns [str]: A list of keys.
     """
     all_keys = [key]
@@ -76,7 +76,7 @@ def build_lock_token(count):
     The token consists out of the pid, current thread id and a counter
     that indicates the number of locks hold on this resource.
 
-    :param count int: The lock count.
+    :param count: (int) The lock count.
     :return str: The built token.
     """
     return '{p}:{t}:{c}'.format(
@@ -89,7 +89,7 @@ def build_lock_token(count):
 def parse_lock_token(token):
     """Parse a lock token into pid, thread id and lock count.
 
-    :param token str: Token (hopefully) built by _build_lock_token.
+    :param token: (str) Token (hopefully) built by _build_lock_token.
     :return tuple: pid, thread_ident and lock_count.
     """
     splitted = token.split(":", 2)
@@ -103,8 +103,8 @@ def extract_keys(nested, prefix=""):
     """Flatten the (potentially nested) dict `nested`
     by extracting each leaf node. Each leaf is identified by a dotted path.
 
-    :param nested dict: The dict to extract keys from.
-    :param prefix str: The prefix which every yielded dotted key should have.
+    :param nested: (dict) The dict to extract keys from.
+    :param prefix: (str) The prefix which every yielded dotted key should have.
     :returns iter: An iterator that yields tuples of (dotted_key, value)
     """
     for key, value in nested.items():
@@ -123,9 +123,9 @@ def feed_to_nested(nested, full_key, value):
     """Feed a dotted path (key) with a certain value to a dictionary.
     If the path contains dots, the result will be a nested dict.
 
-    :param nested dict: The dict to fill the values in.
+    :param nested: (dict) The dict to fill the values in.
                         Existing values will be overwritten.
-    :param key str: A dotted path.
+    :param full_key: (str) A dotted path.
     :param value: Any value.
     """
     keys = full_key.split(".")
@@ -148,8 +148,8 @@ def feed_to_nested(nested, full_key, value):
 def clear_parents(rconn, key):
     """Clear all parent keys of self.
 
-    :param rconn redis.Redis: The connection to redis.
-    :param key str: Dotted path of which node's parent to clear.
+    :param rconn: (redis.Redis) The connection to redis.
+    :param key: (str) Dotted path of which node's parent to clear.
     """
     parents = build_key_hierarchy(key)
     for parent in parents[1:]:
