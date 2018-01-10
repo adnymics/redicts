@@ -1,4 +1,4 @@
-.. image:: docs/logo.svg
+.. image:: https://github.com/adnymics/redicts/raw/master/docs/logo.svg
     :width: 55%
 
 A utilty package to save arbitary nested python dicts and objects in redis.
