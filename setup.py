@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='redicts',
-    version='1.0.0',
+    version='1.0.1',
     description='save arbitary nested python dicts and objects in redis',
     url='http://github.com/adnymics/redicts',
     author='adnymics',
