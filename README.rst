@@ -3,7 +3,7 @@
 
 A utilty package to save arbitary nested python dicts and objects in redis.
 
-|rtd| |nbsp| |coverage| |nbsp| |travis|
+|rtd| |nbsp| |travis| |nbsp| |coverage| |nbsp| |pypi|
 
 .. |rtd| image:: https://readthedocs.org/projects/redicts/badge/?version=latest
    :target: http://redicts.readthedocs.io/en/latest/
@@ -13,6 +13,9 @@ A utilty package to save arbitary nested python dicts and objects in redis.
 
 .. |travis| image:: https://travis-ci.org/adnymics/redicts.svg?branch=master
     :target: https://travis-ci.org/adnymics/redicts
+
+.. |pypi| image:: https://badge.fury.io/py/redicts.svg
+    :target: https://badge.fury.io/py/redicts
 
 .. |nbsp| unicode:: 0xA0
    :trim:
