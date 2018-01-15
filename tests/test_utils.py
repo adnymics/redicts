@@ -9,7 +9,7 @@ Test the key related utils.
 import pytest
 
 # Internal:
-from redicts.util import extract_keys, feed_to_nested
+from redicts.util import extract_keys, feed_to_nested, validate_key
 
 
 SAMPLE_DATA = {
@@ -53,3 +53,21 @@ def test_feed_to_nested():
     feed_to_nested(nested, "a.c.e", 2)
     feed_to_nested(nested, "a.c.e.f", {"deep": "nested"})
     assert nested["a"]["c"]["e"]["f"]["deep"] == "nested"
+
+
+@pytest.mark.unittest
+def test_validate_key():
+    """Try some invalid keys"""
+    with pytest.raises(ValueError):
+        validate_key("")
+
+    with pytest.raises(ValueError):
+        validate_key(".a")
+
+    with pytest.raises(ValueError):
+        validate_key("a.")
+
+    with pytest.raises(ValueError):
+        validate_key("a..b")
+
+    validate_key("a.b")

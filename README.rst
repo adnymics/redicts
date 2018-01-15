@@ -3,7 +3,7 @@
 
 A utilty package to save arbitary nested python dicts and objects in redis.
 
-|rtd| |nbsp| |travis| |nbsp| |coverage| |nbsp| |pypi|
+|rtd| |nbsp| |travis| |nbsp| |coverage| |nbsp| |pypi| |nbsp| |pep8|
 
 .. |rtd| image:: https://readthedocs.org/projects/redicts/badge/?version=latest
    :target: http://redicts.readthedocs.io/en/latest/
@@ -16,6 +16,9 @@ A utilty package to save arbitary nested python dicts and objects in redis.
 
 .. |pypi| image:: https://badge.fury.io/py/redicts.svg
     :target: https://badge.fury.io/py/redicts
+
+.. |pep8| image:: https://img.shields.io/badge/code%20style-pep8-green.svg
+    :target: https://www.python.org/dev/peps/pep-0008
 
 .. |nbsp| unicode:: 0xA0
    :trim:
@@ -46,6 +49,12 @@ to not require a global lock if changes are done in different parts of the
 hierarchy.
 
 You can store every object in ``redicts`` that works with ``json.dumps()``.
+
+Why?
+====
+
+We use ``redis`` quite a lot in our day-to-day work and often want to share values
+between different (micro-)services. This package helps us to do that safe and easily.
 
 Documentation
 =============
