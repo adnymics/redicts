@@ -8,8 +8,8 @@ A utilty package to save arbitary nested python dicts and objects in redis.
 .. |rtd| image:: https://readthedocs.org/projects/redicts/badge/?version=latest
    :target: http://redicts.readthedocs.io/en/latest/
 
-.. TODO: Setup.
-.. |coverage| unicode:: 0xA0
+.. |coverage| image:: https://coveralls.io/repos/github/adnymics/redicts/badge.svg
+   :target: https://coveralls.io/github/adnymics/redicts
 
 .. |travis| image:: https://travis-ci.org/adnymics/redicts.svg?branch=master
     :target: https://travis-ci.org/adnymics/redicts
