@@ -9,7 +9,8 @@ Test the key related utils.
 import pytest
 
 # Internal:
-from redicts.util import extract_keys, feed_to_nested, validate_key
+from redicts.util import \
+    extract_keys, feed_to_nested, validate_key, parse_lock_token, InternalError
 
 
 SAMPLE_DATA = {
@@ -71,3 +72,15 @@ def test_validate_key():
         validate_key("a..b")
 
     validate_key("a.b")
+
+
+@pytest.mark.unittest
+def test_parse_lock_token():
+    """See if passing good & wrong lock tokens work"""
+    pid, ident, count = parse_lock_token("1:2:3")
+    assert pid == 1
+    assert ident == 2
+    assert count == 3
+
+    with pytest.raises(InternalError):
+        parse_lock_token("1:2")
