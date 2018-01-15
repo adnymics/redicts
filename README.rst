@@ -6,6 +6,7 @@ A utilty package to save arbitary nested python dicts and objects in redis.
 |rtd| |nbsp| |coverage| |nbsp| |travis|
 
 .. |rtd| image:: https://readthedocs.org/projects/redicts/badge/?version=latest
+   :target: http://redicts.readthedocs.io/en/latest/
 
 .. TODO: Setup.
 .. |coverage| unicode:: 0xA0
