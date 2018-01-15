@@ -11,8 +11,8 @@ A utilty package to save arbitary nested python dicts and objects in redis.
 .. TODO: Setup.
 .. |coverage| unicode:: 0xA0
 
-.. TODO: Setup.
-.. |travis| unicode:: 0xA0
+.. |travis| image:: https://travis-ci.org/adnymics/redicts.svg?branch=master
+    :target: https://travis-ci.org/adnymics/redicts
 
 .. |nbsp| unicode:: 0xA0
    :trim:
