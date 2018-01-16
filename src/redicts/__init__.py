@@ -51,17 +51,3 @@ __version__ = '1.0.0'
 from redicts.proxy import section, root, Pool, Proxy
 from redicts.lock import Lock
 from redicts.errors import LockTimeout, InternalError
-
-
-if __name__ == "__main__":
-    def main():
-        """Very short benchmarking main.
-        Run with: python -m cProfile -s cumtime
-        """
-        root_proxy = root()
-        for _ in range(1000):
-            with root_proxy["a"]:
-                root_proxy["a"]["b"]["c"] = \
-                    root_proxy["a"]["b"]["c"].val(default=1) + 1
-
-    main()

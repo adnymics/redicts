@@ -53,8 +53,9 @@ You can store every object in ``redicts`` that works with ``json.dumps()``.
 Why?
 ====
 
-We use ``redis`` quite a lot in our day-to-day work and often want to share values
-between different (micro-)services. This package helps us to do that safe and easily.
+We use ``redis`` quite a lot in our day-to-day work and often want to share
+values between different (micro-)services. This package helps us to do that
+safely and easily.
 
 Documentation
 =============
