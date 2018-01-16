@@ -3,7 +3,7 @@
 
 A utilty package to save arbitary nested python dicts and objects in redis.
 
-|rtd| |nbsp| |travis| |nbsp| |coverage| |nbsp| |pypi| |nbsp| |pep8|
+|rtd| |nbsp| |travis| |nbsp| |coverage| |nbsp| |pypi| |nbsp| |pep8| |nbsp| |gplv3|
 
 .. |rtd| image:: https://readthedocs.org/projects/redicts/badge/?version=latest
    :target: http://redicts.readthedocs.io/en/latest/
@@ -20,6 +20,9 @@ A utilty package to save arbitary nested python dicts and objects in redis.
 .. |pep8| image:: https://img.shields.io/badge/code%20style-pep8-green.svg
     :target: https://www.python.org/dev/peps/pep-0008
 
+.. |gplv3| image:: https://img.shields.io/badge/License-GPL%20v3-green.svg
+    :target: https://www.gnu.org/licenses/gpl-3.0
+
 .. |nbsp| unicode:: 0xA0
    :trim:
 
@@ -28,8 +31,8 @@ Usage
 
 This package can be used to save arbitary values in a hierarchy. Each element
 of this hierarchy is referenced by a dotted path like this: ``a.b.c``. When
-saving a nested dictionary, it's nested contents automatically get translated
-to such a dotted path by it's string keys:
+saving a nested dictionary, its nested contents automatically get translated
+to such a dotted path by its string keys:
 
 .. code-block:: python
 
@@ -44,7 +47,7 @@ to such a dotted path by it's string keys:
 
 A special feature of this package is concurrent access: It can be safely used
 from more than one process. The locking implementation is also separated and
-can be used on it's one if desirable. Also, the implementation is clever enough
+can be used on its own if desirable. Also, the implementation is clever enough
 to not require a global lock if changes are done in different parts of the
 hierarchy.
 

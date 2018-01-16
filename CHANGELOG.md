@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.0.5]
+
 # [Released]
 
-## [1.0.3] - 2018-01-15
+## [1.0.4] - 2018-01-14
 
 Initial split out from the main codebase.
 
-[Unreleased]: https://github.com/adnymics/redicts/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/adnymics/redicts/compare/v1.0.4...HEAD
 [1.0.0]: https://github.com/adnymics/redicts/compare/v0.3.0...v1.0.0
