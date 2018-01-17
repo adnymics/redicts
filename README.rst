@@ -74,8 +74,8 @@ If redis is started with default host/port/password, this should work:
 
 .. code-block:: pycon
 
-    >>> from redicts import Section
-    >>> with Section("a.b.c") as sec:
+    >>> from redicts import section
+    >>> with section("a.b.c") as sec:
     ...     #  Setting values:
     ...     sec["my-value"] = 42
     ...     sec["my-part"] = {"key": "value"}
