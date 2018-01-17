@@ -489,7 +489,7 @@ def section(name, *args, **kwargs):
     A good idiom is to use something like this to get a descriptive, but
     unique name for your module:
 
-        Section(__name__)
+        section(__name__)
 
     :param name str: The section name. May not contain dots.
     :returns: A Proxy for the section.

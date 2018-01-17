@@ -7,15 +7,15 @@ The store works hierarchically. Acessing values works by using a dotted path
 notation (e.g: root.child1.child2.value). This allows natural splitting up the
 values in sections. Getting "root.child1" will yield a dict that contains a
 subdict under "child2" which contains the actual value under the "value" key.
-Instead of actually returning these values though, a new ValueProxy is
+Instead of actually returning these values though, a new Proxy is
 returned, on which .val() can be called to lazily retrieve the actual value.
 You can store every value which you can also pass to json.dumps().
 
 Locking is also possible hierarchically by calling acquire()/release() on each
-ValueProxy anywhere in the hierarchy. If a parent ValueProxy is already locked,
+Proxy anywhere in the hierarchy. If a parent Proxy is already locked,
 a recursive lock will be added on the parent.
 
-ATTENTION: Note that ValueProxy operations are by default *not* locked.  Always
+ATTENTION: Note that Proxy operations are by default *not* locked.  Always
 call acquire() before or use it in combination with the `with` statement.
 
 The locking implementation (Lock) is separated and can be used
@@ -37,7 +37,7 @@ Basic usage example:
     ...     sec["subsection"]["a"].val()  # => 42
     ...
     >>> # Accessing the subsection directly works fine too.
-    >>> with Section("QualityControl.subsection") as sub:
+    >>> with section("QualityControl.subsection") as sub:
     ...     sub["a"].val()  # => 23
 
 
