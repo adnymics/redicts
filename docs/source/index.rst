@@ -6,12 +6,12 @@
 Welcome to redicts's documentation!
 ===================================
 
-A utilty package to save arbitary nested python dicts and objects in redis.
+A utility package to save arbitrary nested Python dicts and objects in Redis.
 
 .. image:: ../logo.svg
     :width: 55%
 
-This package can be used to save arbitary values in a hierarchy. Each element
+This package can be used to save arbitrary values in a hierarchy. Each element
 of this hierarchy is referenced by a dotted path like this: ``a.b.c``. When
 saving a nested dictionary, it's nested contents automatically get translated
 to such a dotted path by it's string keys:

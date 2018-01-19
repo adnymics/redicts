@@ -1,7 +1,8 @@
 .. image:: https://cdn.rawgit.com/adnymics/redicts/ebd9808f/docs/logo.svg
     :width: 55%
 
-A utilty package to save arbitary nested python dicts and objects in redis.
+
+A utility package to save arbitrary nested Python dicts and objects in Redis.
 
 |rtd| |nbsp| |travis| |nbsp| |coverage| |nbsp| |pypi| |nbsp| |pep8| |nbsp| |gplv3|
 
@@ -29,7 +30,7 @@ A utilty package to save arbitary nested python dicts and objects in redis.
 Usage
 =====
 
-This package can be used to save arbitary values in a hierarchy. Each element
+This package can be used to save arbitrary values in a hierarchy. Each element
 of this hierarchy is referenced by a dotted path like this: ``a.b.c``. When
 saving a nested dictionary, its nested contents automatically get translated
 to such a dotted path by its string keys:
@@ -63,7 +64,7 @@ safely and easily.
 Documentation
 =============
 
-Documentation can be found on readthedocs:
+Documentation can be found on ReadTheDocs:
 
     http://redicts.readthedocs.io/en/latest
 
