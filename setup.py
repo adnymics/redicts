@@ -8,7 +8,7 @@ def read(fname):
 
 setup(
     name='redicts',
-    version='1.0.4',
+    version='1.0.5',
     description='Save arbitary nested python dicts and objects in redis',
     url='http://github.com/adnymics/redicts',
     author='adnymics',
