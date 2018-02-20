@@ -16,8 +16,8 @@ setup(
     license='GPLv3',
     package_dir={"": "src"},
     packages=["redicts"],
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
+    setup_requires=[],
+    tests_require=['pytest', 'pytest-runner'],
     long_description=read("README.rst"),
     classifiers=[
         "Development Status :: 4 - Beta",
