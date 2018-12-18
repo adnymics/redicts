@@ -220,9 +220,9 @@ def test_value_exists(fake_redis):
     """Test if the exists method works."""
     sec = section("dummy")
 
-    assert not sec["x"].exists()
+    assert sec["x"].exists() is False
     sec["x"] = 42
-    assert sec["x"].exists()
+    assert sec["x"].exists() is True
 
 
 @pytest.mark.unittest
