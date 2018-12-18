@@ -204,7 +204,7 @@ class _Proxy(object):
 
     def exists(self):
         """Return true if this value actually exists"""
-        return self._conn().exists(self._get_full_key(None))
+        return self._conn().exists(self._get_full_key(None)) > 0
 
     def delete(self, key):
         """Delete an existing key.
